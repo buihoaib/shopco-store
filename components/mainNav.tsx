@@ -22,9 +22,9 @@ const MainNav: React.FC<MainNavProps> = ({
     }));
 
     const shopAllRoute = {
-        href: `/product`,
+        href: `/categories`,
         label: 'Shop All',
-        active: pathname === `/product`,
+        active: pathname === `/categories`,
     }
 
     return (
