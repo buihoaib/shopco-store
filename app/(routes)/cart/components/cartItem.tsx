@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import IconButton from "@/components/ui/iconButton";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/useCart";
 import { ClientOrderItem, Product } from "@/types";
-
 
 interface CartItemProps {
     data: ClientOrderItem;
@@ -15,15 +15,20 @@ interface CartItemProps {
 const CartItem: React.FC<CartItemProps> = ({
     data
 }) => {
+    const router = useRouter();
     const cart = useCart();
 
     const onRemove = () => {
         cart.removeItem(data.id);
     };
 
+    const handleClick = () => {
+        router.push(`/product/${data?.product?.id}` + `?` + `size=${data.size}`);
+    };
+
     return (
         <li className="flex py-6 border-b">
-            <div className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48">
+            <div onClick={handleClick} className="relative h-24 w-24 rounded-md overflow-hidden sm:h-48 sm:w-48 cursor-pointer">
                 <Image
                     fill
                     src={data.product.images[0].url}
@@ -36,7 +41,7 @@ const CartItem: React.FC<CartItemProps> = ({
                     <IconButton onClick={onRemove} icon={<X size={15} />} />
                 </div>
                 <div className="relative flex flex-col pr-9 sm:gap-x-6 sm:pr-0 gap-y-1">
-                    <div className="flex justify-between">
+                    <div onClick={handleClick} className="flex justify-between cursor-pointer">
                         <p className=" text-lg font-semibold text-black">
                             {data.product.name}
                         </p>
