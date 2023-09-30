@@ -6,7 +6,7 @@ import { ClientOrderItem, Product } from '@/types';
 
 interface CartStore {
     items: ClientOrderItem[];
-    addItem: (data: Product, size: string) => void;
+    addItem: (data: Product, size: string, quantity: number) => void;
     removeItem: (id: string) => void;
     removeAll: () => void;
 }
@@ -14,12 +14,13 @@ interface CartStore {
 const useCart = create(
     persist<CartStore>((set, get) => ({
         items: [],
-        addItem: (data: Product, size: string) => {
+        addItem: (data: Product, size: string, quantity: number) => {
             const currentItems = get().items;
             const existingItem = currentItems.find((item) => item.id === `${data.id}-${size}`);
 
             if (existingItem) {
-                const newQuantity = existingItem.quantity + 1;
+                const newQuantity = existingItem.quantity + quantity;
+
                 // Remove item
                 set({ items: [...get().items.filter((item) => item.id !== `${data.id}-${size}`)] });
                 // Create new with updated quantity
@@ -37,7 +38,7 @@ const useCart = create(
                     id: `${data.id}-${size}`,
                     product: data,
                     size,
-                    quantity: 1
+                    quantity
                 }
                 set({ items: [newItem, ...get().items] });
                 toast.success('Item added to cart.');

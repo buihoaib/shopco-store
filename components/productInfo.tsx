@@ -1,17 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
+import { toast } from 'react-hot-toast';
 
 import { cn } from "@/lib/utils"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import Currency from "@/components/ui/currency";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types";
 import useCart from "@/hooks/useCart";
+import { useEffect, useState } from "react";
 
-const IN_STOCK = "In stock and ready to ship";
-const OUT_OF_STOCK = "Out of stock";
+const SIZE_IN_STOCK = "In stock and ready to ship";
+const SIZE_OUT_OF_STOCK = "Out of stock";
 
 interface ProductInfoProps {
     data: Product
@@ -21,12 +29,25 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ data }) => {
     const router = useRouter()
     const searchParams = useSearchParams();
     const selectedSizeType = searchParams.get("size") || data.sizes[0].type;
+    const [selectedQuantity, setSelectedQuantity] = useState("1")
+    const [availableStock, setAvailableStock] = useState(0)
 
     const cart = useCart();
 
+    useEffect(() => {
+        setAvailableStock(data.sizes.find((size) => size.type === selectedSizeType)!.stock)
+        setSelectedQuantity("1");
+    }, [selectedSizeType]);
+
     const onAddToCart = () => {
-        cart.addItem(data, selectedSizeType);
-    }
+        const quantityInCart = cart.items.find((item) => item.id === `${data.id}-${selectedSizeType}`)?.quantity || 0;
+
+        if (parseInt(selectedQuantity) + quantityInCart > availableStock) {
+            toast.error(`Selected quantity exceeds stock.\nPlease select quantity <= ${availableStock - quantityInCart}`);
+        } else {
+            cart.addItem(data, selectedSizeType, parseInt(selectedQuantity));
+        }
+    };
 
     const isCurrentSizeOutOfStock = () => {
         const selectedSize: any = data.sizes.find((size) => size.type === selectedSizeType);
@@ -34,7 +55,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ data }) => {
             return !(selectedSize.stock > 0);
         }
         return true;
-    }
+    };
 
     return (
         <div>
@@ -73,10 +94,36 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ data }) => {
                     <h3
                         className={cn("font-regular ", isCurrentSizeOutOfStock() ? "text-red-500" : "text-stone-600")}
                     >
-                        {isCurrentSizeOutOfStock() ? OUT_OF_STOCK : IN_STOCK}
+                        {isCurrentSizeOutOfStock() ? SIZE_OUT_OF_STOCK : SIZE_IN_STOCK}
                     </h3>
                 </div>
-            </div>
+                <div className="flex flex-col items-start gap-x-4">
+                    <h3 className="font-semibold text-black">Quantity:</h3>
+                    <Select
+                        disabled={availableStock === 0}
+                        value={(selectedQuantity)}
+                        defaultValue={"1"}
+                        onValueChange={(value) => setSelectedQuantity(value)}
+                    >
+                        <SelectTrigger className="w-[150px]">
+                            <SelectValue
+                                placeholder="1"
+                            />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                            {[...Array((availableStock > 5 ? 5 : availableStock))].map((e, index) => (
+                                <SelectItem
+                                    key={index}
+                                    value={(index + 1).toString()}
+                                    className="bg-white border-b-2 last:border-b-0"
+                                >
+                                    {index + 1}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div >
 
             <div className="mt-10 flex items-center gap-x-3">
                 <Button
@@ -88,7 +135,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ data }) => {
                     <ShoppingCart size={20} />
                 </Button>
             </div>
-        </div>
+        </div >
     );
 }
 
