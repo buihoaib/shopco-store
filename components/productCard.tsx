@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { MouseEventHandler, useCallback } from "react";
 import { Expand, ShoppingCart } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import Currency from "@/components/ui/currency";
 import IconButton from "@/components/ui/iconButton";
@@ -22,22 +22,9 @@ const ProductCard: React.FC<ProductCard> = ({
     const cart = useCart();
 
     const router = useRouter();
-    const searchParams = useSearchParams()!
-
-    // Get a new searchParams string by merging the current
-    // searchParams with a provided key/value pair
-    const createQueryString = useCallback(
-        (name: string, value: string) => {
-            const params = new URLSearchParams(searchParams)
-            params.set(name, value)
-
-            return params.toString()
-        },
-        [searchParams]
-    )
 
     const handleClick = () => {
-        router.push(`/product/${data?.id}` + `?` + createQueryString('size', 'S'));
+        router.push(`/product/${data?.id}` + `?` + `size=${data.sizes[0].type}`);
     };
 
     // const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
