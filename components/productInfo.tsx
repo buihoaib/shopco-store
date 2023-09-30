@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShoppingCart } from "lucide-react";
+import { X, ShoppingCart } from "lucide-react";
 import { toast } from 'react-hot-toast';
 
 import { cn } from "@/lib/utils"
@@ -77,15 +77,15 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ data }) => {
                                 onClick={(e) => {
                                     router.replace(`/product/${data?.id}?${new URLSearchParams({ size: size.type })}`)
                                 }}
-                                className={cn("border-2 flex w-12 justify-center hover:bg-transparent relative",
+                                className={cn("border-2 flex w-24 justify-center hover:bg-transparent relative",
                                     ((size.type === selectedSizeType) && "border-black"))}
                             >
                                 {size.stock === 0 ? (
-                                    <span
-                                        className="before:absolute before:border-[1px] before-box-content before:border-red-500 before:w-full before:-rotate-45 before:origin-bottom before:top-1/2"
-                                    >
-                                        <span className="relative px-4 py-2 opacity-50">{size.type}</span>
-                                    </span>) :
+                                    <>
+                                        <X size={50} color="red" className="absolute" />
+                                        <span className="relative px-4 py-2 opacity-80">{size.type}</span>
+                                    </>
+                                ) :
                                     <span className="relative px-4 py-2">{size.type}</span>
                                 }
                             </Button>
