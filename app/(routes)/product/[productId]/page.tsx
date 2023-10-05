@@ -4,13 +4,13 @@ import ProductInfo from '@/components/productInfo';
 import getProduct from '@/actions/getProduct';
 import getProducts from '@/actions/getProducts';
 
-export const revalidate = 0;
-
 interface ProductPageProps {
     params: {
         productId: string;
     },
 }
+
+export const revalidate = 0;
 
 const ProductPage: React.FC<ProductPageProps> = async ({
     params

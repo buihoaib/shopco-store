@@ -10,6 +10,8 @@ interface AllCategoriesPageProps {
     },
 }
 
+export const revalidate = 0;
+
 const AllCategoriesPage: React.FC<AllCategoriesPageProps> = async ({
     params,
 }) => {

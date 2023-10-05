@@ -2,6 +2,8 @@ import getProducts from '@/actions/getProducts';
 import Banner from '@/components/banner'
 import ProductList from '@/components/productList';
 
+export const revalidate = 0;
+
 const Home = async () => {
   const products = await getProducts({ isFeatured: true });
 
