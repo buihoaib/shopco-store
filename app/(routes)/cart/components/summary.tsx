@@ -10,6 +10,8 @@ import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/useCart";
 import { toast } from "react-hot-toast";
 
+export const revalidate = 0;
+
 const Summary = () => {
     const searchParams = useSearchParams();
     const items = useCart((state: { items: any; }) => state.items);
